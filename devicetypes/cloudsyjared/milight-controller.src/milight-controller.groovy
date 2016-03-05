@@ -23,7 +23,9 @@ metadata {
         capability "Sensor"
         capability "Refresh" 
         
-        command "reload"        
+        command "reload" 
+        command "flash"
+        command "onDaylight"
         command "unknown"
 	}
     
@@ -99,7 +101,31 @@ def setColor(value, boolean sendHttp = true) {
     	def h = value.hex
         sendEvent(name: 'color', value: h, data: [sendReq: sendHttp])
     }
+    log.debug "milight color value: $value"
+    
 	return sendEvent(name: 'switch', value: "on", data: [sendReq: sendHttp])
+}
+
+def flash(boolean sendHttp = true){
+
+//def red = [red:255, level:100, hex:"#FF0023", blue:35, saturation:99.6078431372549, hue:97.70341207349081, green:0, alpha:1]
+//def white = [red:255, level:100, hex:"#FFFFFF", blue:255, saturation:0, hue:0, green:255, alpha:1]
+def redHex = "#FF0023"
+def whiteHex = "#FFFFFF"
+sendEvent(name: 'switch', value: "on", data: [sendReq: sendHttp])
+return delayBetween([
+delayBetween([sendEvent(name: 'color', value: redHex, data: [sendReq: sendHttp]), sendEvent(name: 'color', value: whiteHex, data: [sendReq: sendHttp])], 1000),
+//delayBetween([sendEvent(name: 'color', value: redHex, data: [sendReq: sendHttp]), sendEvent(name: 'color', value: whiteHex, data: [sendReq: sendHttp])], 1000),
+delayBetween([sendEvent(name: 'color', value: redHex, data: [sendReq: sendHttp]), sendEvent(name: 'color', value: whiteHex, data: [sendReq: sendHttp])], 1000)],
+2000)
+}
+
+def onDaylight(boolean sendHttp = true){
+	def whiteHex = "#FFFFFF"
+    sendEvent(name: 'color', value: whiteHex, data: [sendReq: sendHttp])
+    return sendEvent(name: 'switch', value: "on", data: [sendReq: sendHttp])
+
+
 }
 
 def unknown() {
