@@ -115,7 +115,7 @@ def whiteHex = "#FFFFFF"
 sendEvent(name: 'switch', value: "on", data: [sendReq: sendHttp])
 return delayBetween([
 delayBetween([sendEvent(name: 'color', value: redHex, data: [sendReq: sendHttp]), sendEvent(name: 'color', value: whiteHex, data: [sendReq: sendHttp])], 1000),
-//delayBetween([sendEvent(name: 'color', value: redHex, data: [sendReq: sendHttp]), sendEvent(name: 'color', value: whiteHex, data: [sendReq: sendHttp])], 1000),
+delayBetween([sendEvent(name: 'color', value: redHex, data: [sendReq: sendHttp]), sendEvent(name: 'color', value: whiteHex, data: [sendReq: sendHttp])], 1000),
 delayBetween([sendEvent(name: 'color', value: redHex, data: [sendReq: sendHttp]), sendEvent(name: 'color', value: whiteHex, data: [sendReq: sendHttp])], 1000)],
 2000)
 }
