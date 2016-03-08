@@ -57,9 +57,17 @@ metadata {
         standardTile("refresh", "device.testing", width: 2, height: 2, inactiveLabel: false, decoration: "flat") {
             state "default", label:"", action:"testing", icon:"st.secondary.refresh"
         }
+        
+        standardTile("onDaylight", "device.testing", width: 2, height: 2, inactiveLabel: false, decoration: "flat") {
+            state "default", label:"onDaylight()", action:"onDaylight", icon:""
+        }
+        
+         standardTile("flash", "device.testing", width: 2, height: 2, inactiveLabel: false, decoration: "flat") {
+            state "default", label:"flash()", action:"flash", icon:""
+        }
        
 		main(["switch"])
-		details(["switch","levelSliderControl", "rgbSelector", "refresh"])
+		details(["switch","levelSliderControl", "rgbSelector", "refresh", "onDaylight", "flash"])
 	} 
 }
 
@@ -107,24 +115,75 @@ def setColor(value, boolean sendHttp = true) {
 }
 
 def flash(boolean sendHttp = true){
+	def doFlash = true
+    def onFor = onFor ?: 1000
+	def offFor = offFor ?: 1000
+	def numFlashes = numFlashes ?: 6
+    def redHex = "#FF0023"
+	def whiteHex = "#FFFFFF"
 
+	log.debug "LAST ACTIVATED IS: ${state.lastActivated}"
+	if (state.lastActivated) {
+		def elapsed = now() - state.lastActivated
+		def sequenceTime = (numFlashes + 1) * (onFor + offFor)
+		doFlash = elapsed > sequenceTime
+		log.debug "DO FLASH: $doFlash, ELAPSED: $elapsed, LAST ACTIVATED: ${state.lastActivated}"
+	}
+    /*
 //def red = [red:255, level:100, hex:"#FF0023", blue:35, saturation:99.6078431372549, hue:97.70341207349081, green:0, alpha:1]
 //def white = [red:255, level:100, hex:"#FFFFFF", blue:255, saturation:0, hue:0, green:255, alpha:1]
-def redHex = "#FF0023"
-def whiteHex = "#FFFFFF"
-sendEvent(name: 'switch', value: "on", data: [sendReq: sendHttp])
-return delayBetween([
-delayBetween([sendEvent(name: 'color', value: redHex, data: [sendReq: sendHttp]), sendEvent(name: 'color', value: whiteHex, data: [sendReq: sendHttp])], 1000),
-delayBetween([sendEvent(name: 'color', value: redHex, data: [sendReq: sendHttp]), sendEvent(name: 'color', value: whiteHex, data: [sendReq: sendHttp])], 1000),
-delayBetween([sendEvent(name: 'color', value: redHex, data: [sendReq: sendHttp]), sendEvent(name: 'color', value: whiteHex, data: [sendReq: sendHttp])], 1000)],
-2000)
+
+//delayBetween([
+//delayBetween([sendEvent(name: 'color', value: redHex, data: [sendReq: sendHttp]), sendEvent(name: 'color', value: whiteHex, data: [sendReq: sendHttp])], 10)
+sendEvent(name: 'color', value: redHex, data: [sendReq: sendHttp])
+sendEvent(name: 'color', value: whiteHex, data: [sendReq: sendHttp])
+log.debug("end of first set")
+//delayBetween([sendEvent(name: 'color', value: redHex, data: [sendReq: sendHttp]), sendEvent(name: 'color', value: whiteHex, data: [sendReq: sendHttp])], 10)
+sendEvent(name: 'color', value: redHex, data: [sendReq: sendHttp])
+sendEvent(name: 'color', value: whiteHex, data: [sendReq: sendHttp])
+log.debug("end of second set")
+//delayBetween([sendEvent(name: 'color', value: redHex, data: [sendReq: sendHttp]), sendEvent(name: 'color', value: whiteHex, data: [sendReq: sendHttp])], 10)
+sendEvent(name: 'color', value: redHex, data: [sendReq: sendHttp])
+sendEvent(name: 'color', value: whiteHex, data: [sendReq: sendHttp])
+log.debug("end of third set")
+//], 2000)
+
+*/
+if (doFlash) {
+		log.debug "FLASHING $numFlashes times"
+		state.lastActivated = now()
+		log.debug "LAST ACTIVATED SET TO: ${state.lastActivated}"
+		def initialActionOn = switches.collect{it.currentSwitch != "on"}
+		def delay = 0L
+        
+		numFlashes.times { idx ->
+        log.info "numFlash loop: $idx"
+       	 if ( (idx % 2) == 0 ) 
+       	 {
+    	    log.trace "Switch on after  $delay msec"
+			sendEvent(name: 'color', value: redHex, data: [sendReq: sendHttp], delay: delay)
+   			delay += onFor
+
+
+     	   } 
+      	  else 
+     	   { 
+      	 	log.trace "Switch off after $delay msec"
+			sendEvent(name: 'color', value: whiteHex, data: [sendReq: sendHttp], delay: delay)
+			delay += offFor
+      	  }	
+		}
+        
+	}
+			return sendEvent(name: 'switch', value: "on", data: [sendReq: sendHttp])
+
+
 }
 
 def onDaylight(boolean sendHttp = true){
 	def whiteHex = "#FFFFFF"
     sendEvent(name: 'color', value: whiteHex, data: [sendReq: sendHttp])
     return sendEvent(name: 'switch', value: "on", data: [sendReq: sendHttp])
-
 
 }
 
