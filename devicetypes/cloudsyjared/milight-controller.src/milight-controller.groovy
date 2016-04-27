@@ -193,9 +193,9 @@ def unknown() {
 
 def on(boolean sendHttp = true) {
         
-    return sendEvent(name: "switch", value: "on", data: [sendReq: sendHttp])
+    return sendEvent(name: "switch", value: "on", data: [sendReq: sendHttp], isStateChange: true)
 }
 
 def off(boolean sendHttp = true) {
-    return sendEvent(name: "switch", value: "off", data: [sendReq: sendHttp]);
+    return sendEvent(name: "switch", value: "off", data: [sendReq: sendHttp], isStateChange: true);
 }
