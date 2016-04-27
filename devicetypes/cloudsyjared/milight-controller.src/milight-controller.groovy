@@ -98,7 +98,7 @@ def setLevel(percentage, boolean sendHttp = true) {
         
     sendEvent(name: 'level', value: percentage, data: [sendReq: sendHttp])
     
-    return sendEvent(name: 'switch', value: "on", data: [sendReq: sendHttp])
+    return sendEvent(name: 'switch', value: "on", data: [sendReq: sendHttp], isStateChange: true)
 }
 
 def setColor(value, boolean sendHttp = true) { 
@@ -111,7 +111,7 @@ def setColor(value, boolean sendHttp = true) {
     }
     log.debug "milight color value: $value"
     
-	return sendEvent(name: 'switch', value: "on", data: [sendReq: sendHttp])
+	return sendEvent(name: 'switch', value: "on", data: [sendReq: sendHttp], isStateChange: true)
 }
 
 def flash(boolean sendHttp = true){
@@ -161,7 +161,7 @@ if (doFlash) {
        	 if ( (idx % 2) == 0 ) 
        	 {
     	    log.trace "Switch on after  $delay msec"
-			sendEvent(name: 'color', value: redHex, data: [sendReq: sendHttp], delay: delay)
+			sendEvent(name: 'color', value: redHex, data: [sendReq: sendHttp], delay: delay, isStateChange: true)
    			delay += onFor
 
 
@@ -169,13 +169,13 @@ if (doFlash) {
       	  else 
      	   { 
       	 	log.trace "Switch off after $delay msec"
-			sendEvent(name: 'color', value: whiteHex, data: [sendReq: sendHttp], delay: delay)
+			sendEvent(name: 'color', value: whiteHex, data: [sendReq: sendHttp], delay: delay, isStateChange: true)
 			delay += offFor
       	  }	
 		}
         
 	}
-			return sendEvent(name: 'switch', value: "on", data: [sendReq: sendHttp])
+			return sendEvent(name: 'switch', value: "on", data: [sendReq: sendHttp], isStateChange: true)
 
 
 }
@@ -183,7 +183,7 @@ if (doFlash) {
 def onDaylight(boolean sendHttp = true){
 	def whiteHex = "#FFFFFF"
     sendEvent(name: 'color', value: whiteHex, data: [sendReq: sendHttp])
-    return sendEvent(name: 'switch', value: "on", data: [sendReq: sendHttp])
+    return sendEvent(name: 'switch', value: "on", data: [sendReq: sendHttp], isStateChange: true)
 
 }
 
